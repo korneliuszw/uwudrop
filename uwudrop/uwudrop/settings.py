@@ -125,3 +125,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 WORDS = 10
+MAX_FILE_UPLOAD_DAYS = 7
