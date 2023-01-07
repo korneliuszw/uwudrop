@@ -7,7 +7,8 @@ class Uploader(models.Model):
 class Upload(models.Model):
     uploader = models.ForeignKey(Uploader, on_delete=models.CASCADE)
     identifier = models.CharField(max_length=50, unique=True, primary_key=True)
-    delete_at = models.DateTimeField(null=True)
+    delete_at = models.DateTimeField()
+    password = models.CharField(max_length=80, null=True)
     remaining_downloads = models.IntegerField(null=True)
 
 class FileUpload(models.Model):
