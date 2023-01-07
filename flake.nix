@@ -17,11 +17,36 @@
           python = "python310";
           requirements = ''
             django
+            djangorestframework
+            django-guardian
+            pyyaml
+            uritemplate
+            markdown
           '';
         };
       in {
+        devShells.backend = pkgs.mkShellNoCC {
+          packages = [pythonEnv pkgs.sqlite];
+          shellHook = ''
+            export PYTHONPATH="${pythonEnv}/bin/python"
+          '';
+        };
+        devShells.frontEnd = pkgs.mkShellNoCC {
+          packages = with pkgs; [
+            nodejs-19_x
+            nodePackages.pnpm
+          ];
+          shellHook = ''
+            export PYTHONPATH="${pythonEnv}/bin/python"
+          '';
+        };
         devShells.default = pkgs.mkShellNoCC {
-          packages = [pythonEnv];
+          packages = with pkgs; [
+            nodejs-19_x
+            nodePackages.pnpm
+            pythonEnv
+            pkgs.sqlite
+          ];
           shellHook = ''
             export PYTHONPATH="${pythonEnv}/bin/python"
           '';
