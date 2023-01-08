@@ -1,20 +1,29 @@
-import { API_URL } from "src/constants"
-
+import { API_URL } from "../constants"
+import { obtainCsrf } from "./csrf"
 export enum ContentType {
     Json = "application/json",
-    Form = "multipart/form-data"
+    File = ""
 }
-
+interface PostHeaders {
+    'X-CSRFToken': string;
+    'Content-Type'?: string;
+}
 export const post = (endpoint: string, body: any, contentType: ContentType = ContentType.Json) => {
-    return fetch(API_URL + endpoint, {
-        method: 'POST',
-        body: (contentType === ContentType.Json) ? JSON.stringify(body) : body,
-        headers: {
-            'Content-Type': contentType
-        },
-        credentials: 'include' // TODO: Add switch for production
+    return obtainCsrf().then(token => {
+        let headers: PostHeaders = {
+            'X-CSRFToken': token,
+        }
+        if (contentType !== ContentType.File) headers['Content-Type'] = contentType
+        return fetch(API_URL + endpoint, {
+            method: 'POST',
+            body: (contentType === ContentType.Json) ? JSON.stringify(body) : body,
+            headers,
+            credentials: 'include' // TODO: Add switch for production
+        })
     })
 }
+
+
 export const get = (endpoint: string) => {
     return fetch(API_URL + endpoint, {
         credentials: 'include'

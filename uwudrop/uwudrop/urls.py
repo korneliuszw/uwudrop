@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from manager.views import csrf
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('uploader/', include('uploader.urls')),
+    path('csrf', csrf)
 ]
