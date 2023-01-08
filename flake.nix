@@ -19,6 +19,7 @@
             django
             djangorestframework
             django-guardian
+            django-cors-headers
             pyyaml
             uritemplate
             markdown
