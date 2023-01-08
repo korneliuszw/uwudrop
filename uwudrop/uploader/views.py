@@ -42,6 +42,15 @@ def begin_upload(request: Request):
 
     return response
 
+@api_view(['GET'])
+def invalidate_upload(request: Request) -> Response:
+    upload_data_serializer = UploadSerializer(data=request.data)
+    upload_data_serializer.is_valid(raise_exception=True)
+    if not request.get_signed_cookie('user_id'):
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    upload = Upload(uploader_pk = request.get_signed_cookie('user_id'), identifier=request.query_params.get('id'))
+    upload.delete()
+
 
 def create_uploader(request: Request, response: Response) -> Uploader:
     ip = request.META.get('REMOTE_ADDR')
