@@ -1,6 +1,7 @@
 <script lang="ts">
-    import {FileDropzone, Headline, Subhead, FormField, TextField, TimePicker, DatePicker, Divider, Button, Loading} from 'attractions'
+    import {FileDropzone, Headline, Subhead, FormField, TextField, TimePicker, DatePicker, Divider, Button, Loading, H3} from 'attractions'
     import { uploadFiles } from './api';
+    import { DONWLOAD_ENDPOINT, WEB_URL} from '../constants'
 
     let files: File[] = []
 
@@ -12,12 +13,14 @@
         return date
     })()
     let expireAfter : Date = maxDate
-    let requestStatus: Promise<any> | undefined = undefined
+    let requestStatus: Promise<string> | undefined = undefined
     const upload = () => {
-        requestStatus = uploadFiles(files, { password, delete_at: expireAfter, remaining_downloads: maxDownloads }).finally(() => requestStatus = undefined)
+        requestStatus = uploadFiles(files, { password, delete_at: expireAfter, remaining_downloads: maxDownloads })
+            .then(s => `${WEB_URL}${DONWLOAD_ENDPOINT}${s}`)
     }
 
     $: if (expireAfter > maxDate) expireAfter = maxDate
+    $: if (files.length > 0) requestStatus = undefined
 
 </script>
 
@@ -42,12 +45,20 @@
         <DatePicker bind:value={expireAfter}/> <TimePicker bind:value={expireAfter}/>
         </FormField>
         <Divider/>
-            {#if !requestStatus}
-                <Button filled class="my-5 mx-auto" on:click={upload}>Upload</Button>
-            {:else}
-                {#await requestStatus}
-                    <Loading class="text-3xl py-10"/>
-                {/await}
+        {#if !requestStatus}
+            <Button filled class="my-5 mx-auto" on:click={upload}>Upload</Button>
+        {/if}
+        {#await requestStatus}
+            <Loading class="text-3xl py-10"/>
+        {:then url}
+            {#if requestStatus}
+                <div>
+                    <H3>Your download link: <a href={url}>{url}</a></H3>
+                </div>
             {/if}
+        {:catch err}
+            <H3 class="text-red-500 text-xl">{err}</H3>
+            <Button filled class="my-5 mx-auto" on:click={upload}>Upload</Button>
+        {/await}
     </div>
 </div>

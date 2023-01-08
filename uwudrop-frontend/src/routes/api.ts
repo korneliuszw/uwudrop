@@ -6,7 +6,9 @@ interface UploadFilesOptions {
     delete_at?: Date
     remaining_downloads?: number;
 }
-export const uploadFiles = async (files: File[], options: UploadFilesOptions) => {
+
+export type UploadIdentifier = string;
+export const uploadFiles = async (files: File[], options: UploadFilesOptions): Promise<UploadIdentifier> => {
     const beginUploadResponse = await post(UPLOAD_START_ENDPOINT, options);
     const uploadInfo = await beginUploadResponse.json()
     if (beginUploadResponse.status != 201) throw "Something went wrong!"
@@ -18,6 +20,7 @@ export const uploadFiles = async (files: File[], options: UploadFilesOptions) =>
         await invalidateUpload(uploadInfo.identifier)
         throw "Your upload has been rejected. Either there is something wrong on our side or yours."
     }
+    return uploadInfo.identifier
 }
 
 export const invalidateUpload = (uploadId: string) => {
