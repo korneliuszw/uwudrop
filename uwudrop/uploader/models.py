@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
 from django.conf import settings
 class Uploader(models.Model):
@@ -7,7 +8,7 @@ class Uploader(models.Model):
 
 
 def maxDaysFromNow():
-    return datetime.now() + timedelta(days=+settings.MAX_FILE_UPLOAD_DAYS)
+    return make_aware(datetime.now() + timedelta(days=+settings.MAX_FILE_UPLOAD_DAYS))
 
 def generate_identifer():
     word_ids = set()
