@@ -1,8 +1,25 @@
+import { ContentType, get, post } from "../common/apiHelper";
+import { INVALIDATE_UPLOAD_ENDPOINT, UPLOAD_FILE_ENDPOINT, UPLOAD_START_ENDPOINT } from "../constants";
+
 interface UploadFilesOptions { 
     password?: string;
-    expireAfter?: Date
+    delete_at?: Date
+    remaining_downloads?: number;
 }
-export const uploadFiles = (files: File[], options: UploadFilesOptions) => {
-    console.log(files)
-    return new Promise(resolve => setTimeout(resolve, 5000))
+export const uploadFiles = async (files: File[], options: UploadFilesOptions) => {
+    const beginUploadResponse = await post(UPLOAD_START_ENDPOINT, options);
+    const uploadInfo = await beginUploadResponse.json()
+    if (beginUploadResponse.status != 201) throw "Something went wrong!"
+    const form = new FormData();
+    form.set('file', files[0]);
+    const uploadResponse = await post(`${UPLOAD_FILE_ENDPOINT}?id=${uploadInfo.identifier}`, form, ContentType.File)
+    if (uploadResponse.status != 201) {
+        // FIXME: Responsibility?
+        await invalidateUpload(uploadInfo.identifier)
+        throw "Your upload has been rejected. Either there is something wrong on our side or yours."
+    }
+}
+
+export const invalidateUpload = (uploadId: string) => {
+    return get(`${INVALIDATE_UPLOAD_ENDPOINT}?id=${uploadId}`)
 }

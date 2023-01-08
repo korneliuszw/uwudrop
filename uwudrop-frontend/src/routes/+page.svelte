@@ -5,7 +5,7 @@
     let files: File[] = []
 
     let password : string | undefined = undefined
-    let downloads : number | undefined = undefined
+    let maxDownloads : number | undefined = undefined
     const maxDate = (() => {
         const date = new Date()
         date.setDate(date.getDate() + 7)
@@ -14,7 +14,7 @@
     let expireAfter : Date = maxDate
     let requestStatus: Promise<any> | undefined = undefined
     const upload = () => {
-        requestStatus = uploadFiles(files, { password, expireAfter }).then(() => requestStatus = undefined)
+        requestStatus = uploadFiles(files, { password, delete_at: expireAfter, remaining_downloads: maxDownloads }).finally(() => requestStatus = undefined)
     }
 
     $: if (expireAfter > maxDate) expireAfter = maxDate
@@ -33,10 +33,10 @@
     <FileDropzone name="file" max={1} bind:files></FileDropzone>
     <div class="upload-settings my-5">
         <FormField name="Password" help="This password will be required to download the file" optional>
-            <TextField bind:value={password}/>
+            <TextField bind:value={password} type="password"/>
         </FormField>
-        <FormField name="Downloads" help="File will be removed after specified number of downloads" optional>
-            <TextField bind:value={downloads} type="number"/>
+        <FormField name="Downloads" help="File will be removed after specified number of downloads (max. 2000)" optional>
+            <TextField bind:value={maxDownloads} type="number" max={2000}/>
         </FormField>
         <FormField name="Expire after:">
         <DatePicker bind:value={expireAfter}/> <TimePicker bind:value={expireAfter}/>
