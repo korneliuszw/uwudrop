@@ -2,6 +2,10 @@ from django.db import models
 from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
 from django.conf import settings
+from random import randint
+import logging
+
+logger = logging.getLogger(__name__)
 class Uploader(models.Model):
     public_ip = models.CharField(max_length=40)
     created_at = models.DateTimeField(auto_now_add=True)
