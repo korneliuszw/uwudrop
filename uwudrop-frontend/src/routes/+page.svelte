@@ -1,7 +1,7 @@
 <script lang="ts">
     import {FileDropzone, Headline, Subhead, FormField, TextField, TimePicker, DatePicker, Divider, Button, Loading, H3} from 'attractions'
     import { uploadFiles } from './api';
-    import { DONWLOAD_ENDPOINT, WEB_URL} from '../constants'
+    import { DONWLOAD_ENDPOINT, API_URL} from '../constants'
 
     let files: File[] = []
 
@@ -16,7 +16,7 @@
     let requestStatus: Promise<string> | undefined = undefined
     const upload = () => {
         requestStatus = uploadFiles(files, { password, delete_at: expireAfter, remaining_downloads: maxDownloads })
-            .then(s => `${WEB_URL}${DONWLOAD_ENDPOINT}${s}`)
+            .then(s => `${API_URL}${DONWLOAD_ENDPOINT}/${s}`)
     }
 
     $: if (expireAfter > maxDate) expireAfter = maxDate

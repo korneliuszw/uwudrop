@@ -24,8 +24,9 @@ export const post = (endpoint: string, body: any, contentType: ContentType = Con
 }
 
 
-export const get = (endpoint: string) => {
+export const get = (endpoint: string, headers?: any) => {
     return fetch(API_URL + endpoint, {
-        credentials: 'include'
+        credentials: 'include',
+        headers
     })
 }

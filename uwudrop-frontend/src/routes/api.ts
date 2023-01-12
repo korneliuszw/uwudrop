@@ -1,5 +1,5 @@
 import { ContentType, get, post } from "../common/apiHelper";
-import { INVALIDATE_UPLOAD_ENDPOINT, UPLOAD_FILE_ENDPOINT, UPLOAD_START_ENDPOINT } from "../constants";
+import { INVALIDATE_UPLOAD_ENDPOINT, MAX_FILE_NAME_SIZE, UPLOAD_FILE_ENDPOINT, UPLOAD_START_ENDPOINT } from "../constants";
 
 interface UploadFilesOptions { 
     password?: string;
@@ -9,6 +9,7 @@ interface UploadFilesOptions {
 
 export type UploadIdentifier = string;
 export const uploadFiles = async (files: File[], options: UploadFilesOptions): Promise<UploadIdentifier> => {
+    if (files[0].name.length > MAX_FILE_NAME_SIZE) throw "Name of this file is too long, keep it below 80 characters"
     const beginUploadResponse = await post(UPLOAD_START_ENDPOINT, options);
     const uploadInfo = await beginUploadResponse.json()
     if (beginUploadResponse.status != 201) throw "Something went wrong!"
