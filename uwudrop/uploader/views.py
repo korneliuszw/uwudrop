@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.exceptions import ParseError
 from uploader.models import FileUpload, IdentifierDictionary, Uploader, Upload
 from uploader.serializers import UploadSerializer
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 def index(request) -> HttpResponse:
@@ -23,8 +24,10 @@ def upload(request: Request) -> Response:
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     uploader = Uploader(pk=request.get_signed_cookie('user_id'))
     upload = uploader.upload_set.get(pk=request.query_params.get('id'))
-    upload.fileupload_set.create(
-        file = request.FILES['file']
+    FileUpload.objects.create(
+        file = request.FILES['file'],
+        originalFileName=request.FILES['file'].name,
+        upload=upload
     )
     return Response(status=status.HTTP_201_CREATED)
 
