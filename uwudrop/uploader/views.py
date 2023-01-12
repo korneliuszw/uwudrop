@@ -34,7 +34,10 @@ def begin_upload(request: Request):
     upload_data_serializer.is_valid(raise_exception=True)
     response = Response(status=status.HTTP_201_CREATED)
     uploader = get_uploader(request) if has_user_cookie(request) else create_uploader(request, response)
-    upload = uploader.upload_set.create(**upload_data_serializer.validated_data)
+    upload = Upload(**upload_data_serializer.validated_data, uploader=uploader)
+    if upload.password:
+        upload.password = make_password(upload.password)
+    upload.save()
     response.data = UploadSerializer(upload).data
     return response
 
