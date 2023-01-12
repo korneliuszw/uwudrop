@@ -3,9 +3,6 @@ from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
 from django.conf import settings
 from random import randint
-import logging
-
-logger = logging.getLogger(__name__)
 class Uploader(models.Model):
     public_ip = models.CharField(max_length=40)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -34,7 +31,8 @@ class Upload(models.Model):
 
 class FileUpload(models.Model):
     file = models.FileField()
-    upload = models.ForeignKey(Upload, on_delete=models.CASCADE)
+    originalFileName = models.CharField(max_length=80)
+    upload = models.OneToOneField(Upload, on_delete=models.CASCADE)
 
 class IdentifierDictionary(models.Model):
     word = models.CharField(max_length = 10)
