@@ -126,14 +126,20 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+FRONTEND_URL = "http://localhost:5173"
+FRONTEND_FILE_PASSWORD_URL = FRONTEND_URL + "/protected/"
+
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173'
+    FRONTEND_URL
 ]
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173'
+    FRONTEND_URL
 ]
 CORS_ALLOWED_HEADERS = [
-    'content-type'
+    'content-type',
+]
+CORS_EXPOSE_HEADERS = [
+    'content-disposition'
 ]
 CORS_ALLOW_CREDENTIALS = True
 
