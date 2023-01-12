@@ -21,5 +21,6 @@ from manager.views import csrf
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('uploader/', include('uploader.urls')),
+    path('download/', include('downloader.urls')),
     path('csrf', csrf)
 ]
