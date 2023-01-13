@@ -142,6 +142,7 @@ CORS_EXPOSE_HEADERS = [
     'content-disposition'
 ]
 CORS_ALLOW_CREDENTIALS = True
+USER_ID_COOKIE_DURATION = 7 * 24 * 60 * 60 # a week in seconds
 
 WORDS = 10
 MAX_FILE_UPLOAD_DAYS = 7

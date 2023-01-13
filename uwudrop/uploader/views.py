@@ -62,7 +62,7 @@ def create_uploader(request: Request, response: Response) -> Uploader:
     uploader = Uploader(public_ip=ip)
     uploader.save()
     # TODO: Secure cookie
-    response.set_signed_cookie("user_id", uploader.pk)
+    response.set_signed_cookie("user_id", uploader.pk, max_age=settings.USER_ID_COOKIE_DURATION)
     return uploader
 
 def get_uploader(request: Request) -> Uploader:
