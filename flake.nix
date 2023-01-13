@@ -23,6 +23,7 @@
             pyyaml
             uritemplate
             markdown
+            apscheduler
           '';
         };
       in {
