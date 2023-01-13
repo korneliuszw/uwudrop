@@ -10,6 +10,7 @@ from rest_framework.exceptions import ParseError
 from uploader.models import FileUpload, IdentifierDictionary, Uploader, Upload
 from uploader.serializers import UploadSerializer
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 def index(request) -> HttpResponse:
@@ -36,7 +37,7 @@ def begin_upload(request: Request):
     upload_data_serializer = UploadSerializer(data=request.data)
     upload_data_serializer.is_valid(raise_exception=True)
     response = Response(status=status.HTTP_201_CREATED)
-    uploader = get_uploader(request) if has_user_cookie(request) else create_uploader(request, response)
+    uploader = get_uploader(request, response) if has_user_cookie(request) else create_uploader(request, response)
     upload = Upload(**upload_data_serializer.validated_data, uploader=uploader)
     if upload.password:
         upload.password = make_password(upload.password)
@@ -49,7 +50,7 @@ def begin_upload(request: Request):
 def invalidate_upload(request: Request) -> Response:
     if not has_user_cookie(request):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    uploader = Uploader(pk=request.get_signed_cookie('user_id'))
+    uploader = Uploader.objects.get(pk=request.get_signed_cookie('user_id'))
     upload = uploader.upload_set.get(identifier=request.query_params.get('id'))
     upload.delete()
     return Response(status=status.HTTP_200_OK)
@@ -65,5 +66,9 @@ def create_uploader(request: Request, response: Response) -> Uploader:
     response.set_signed_cookie("user_id", uploader.pk, max_age=settings.USER_ID_COOKIE_DURATION)
     return uploader
 
-def get_uploader(request: Request) -> Uploader:
-    return Uploader.objects.get(pk=request.get_signed_cookie('user_id'))
+def get_uploader(request: Request, response: Response) -> Uploader:
+    try:
+        return Uploader.objects.get(pk=request.get_signed_cookie('user_id'))
+    except ObjectDoesNotExist:
+        print('Need to create new')
+        return create_uploader(request, response)
